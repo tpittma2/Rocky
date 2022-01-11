@@ -3,7 +3,7 @@
     ViewData["Title"] = "Delete Category " + @Model.Name;
 }
 
-<form method="post" asp-action="DeletePost">
+<form method="post"  onclick="return confirm('Are you sure you want to delete' + @Model.Name + '?')"  asp-action="DeletePost" asp-route-id="@Model.Id" >
     <input asp-for="Id" hidden />
     <div class="border p-3">
         <div class="form-group row">
