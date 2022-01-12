@@ -26,12 +26,10 @@ namespace Rocky.Controllers
 
         public IActionResult Index()
         {
-            IEnumerable<Product> objList = _db.Product;
-            foreach (var obj in objList)
-            {
-                obj.Category = _db.Category.FirstOrDefault(x => x.Id == obj.CategoryId);
-            }
-
+            IEnumerable<Product> objList = _db.Product
+                .Include(x=> x.Category)
+                .Include(x=> x.ApplicationType);
+           
             return View(objList);
         }
 
@@ -51,7 +49,8 @@ namespace Rocky.Controllers
             ProductVM viewModel = new ProductVM
             {
                 Product = new Product(),
-                CategorySelectList = GetCategorySelectList()
+                CategorySelectList = GetCategorySelectList(),
+                ApplicationTypeSelectList = GetApplicationTypeSelectList(),
             };
 
             if (id.HasValue)
@@ -122,6 +121,7 @@ namespace Rocky.Controllers
                 return RedirectToAction("Index");
             }
             productVM.CategorySelectList = GetCategorySelectList();//To keep from the dropdown being empty if ModelState is not valid.
+            productVM.ApplicationTypeSelectList = GetApplicationTypeSelectList();
             return View(productVM);
 
         }
@@ -129,6 +129,15 @@ namespace Rocky.Controllers
         private IEnumerable<SelectListItem> GetCategorySelectList()
         {
             return _db.Category.Select(x => new SelectListItem
+            {
+                Text = x.Name,
+                Value = x.Id.ToString()
+            });
+        }
+
+        private IEnumerable<SelectListItem> GetApplicationTypeSelectList()
+        {
+            return _db.ApplicationType.Select(x => new SelectListItem
             {
                 Text = x.Name,
                 Value = x.Id.ToString()
@@ -152,7 +161,7 @@ namespace Rocky.Controllers
         }
 
         //POST - DELETE
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task< IActionResult> DeletePost(int? id)
         {
