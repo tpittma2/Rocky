@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Rocky.Data;
+using Rocky.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,9 @@ namespace Rocky
             services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(
                 Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddDefaultIdentity<RockyUser>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddHttpContextAccessor(); //Needed for sessions
             services.AddSession(options =>
@@ -58,12 +62,14 @@ namespace Rocky
 
             app.UseRouting();
 
+            app.UseAuthentication(); //before Authorization
             app.UseAuthorization();
 
             app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapRazorPages(); //needed to rerout to the areas/identity razor pages
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
