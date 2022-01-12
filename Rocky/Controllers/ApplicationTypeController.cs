@@ -111,7 +111,6 @@ namespace Rocky.Controllers
                 _db.SaveChanges();
                 return RedirectToAction("Index");
 
-            return View(obj);
         }
     }
 }

@@ -8,5 +8,7 @@ namespace Rocky
     public static class WC
     {
         public static readonly string ImagePath = @"\images\product\";
+
+        public static readonly string SessionCart = "ShoppingCartSession";
     }
 }
